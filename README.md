@@ -4,7 +4,7 @@ To open the frontend implementation go to: [https://github.com/vieraruben/react-
 
 ## Demo
 
-To open the frontend implementation go to: [https://vieraruben.github.io/react-reserve-client](https://vieraruben.github.io/react-reserve-client/)
+[https://master.dpgz0jq6jt2l7.amplifyapp.com/](https://master.dpgz0jq6jt2l7.amplifyapp.com/)
 
 ### Use cases
 
