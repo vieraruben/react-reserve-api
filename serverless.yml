@@ -1,0 +1,100 @@
+service: react-reserve-api
+
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle # Package our functions with Webpack
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  tableName: ${self:custom.stage}-products
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-2
+
+  environment:
+    tableName: ${self:custom.tableName}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "Fn::GetAtt": [ ProductsTable, Arn ]
+
+functions:
+  list:
+    handler: api/order.getOrders
+    events:
+      - http:
+          path: orders
+          method: get
+          cors: true
+          authorizer: aws_iam
+          
+  createOrder:
+    handler: api/order.createOrder
+    events:
+      - http:
+          path: orders
+          method: put
+          cors: true
+          authorizer: aws_iam
+
+  deleteOrder:
+    handler: api/order.deleteOrder
+    events:
+      - http:
+          path: orders
+          method: delete
+          cors: true
+          authorizer: aws_iam
+
+  getCardInfo:
+    handler: api/card.getCardInfo
+    events:
+      - http:
+          path: cards
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  createCardItem:
+    handler: api/card.createCardItem
+    events:
+      - http:
+          path: cards
+          method: put
+          cors: true
+          authorizer: aws_iam
+
+  deleteCardItem:
+    handler: api/card.deleteCardItem
+    events:
+      - http:
+          path: cards
+          method: delete
+          cors: true
+          authorizer: aws_iam
+
+# Create our resources with separate CloudFormation templates
+resources:
+  # API Gateway Errors
+  - ${file(resources/api-gateway-errors.yml)}
+  # DynamoDB
+  - ${file(resources/dynamodb-table.yml)}
+  # S3
+  # - ${file(resources/s3-bucket.yml)}
+  # Cognito
+  - ${file(resources/cognito-user-pool.yml)}
+  - ${file(resources/cognito-identity-pool.yml)}
